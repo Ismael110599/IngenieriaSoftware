@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Tienda Online</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+      margin-top: 20px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      color: #4a5568;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+      animation: pulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+      from {
+        transform: scale(1);
+      }
+      to {
+        transform: scale(1.05);
+      }
+    }
+
+    .demo-button {
+      display: block;
+      margin: 0 auto 30px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(45deg, #ff6b6b, #feca57);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .demo-button:hover::before {
+      left: 100%;
+    }
+
+    .demo-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(255, 107, 107, 0.4);
+    }
+
+    .demo-button:active {
+      transform: translateY(-1px);
+    }
+
+    .output-container {
+      background: #f8fafc;
+      border-radius: 15px;
+      padding: 25px;
+      border: 2px solid #e2e8f0;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .output-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #ff6b6b, #feca57);
+      animation: rainbow 3s linear infinite;
+    }
+
+    @keyframes rainbow {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    #salida {
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #2d3748;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      min-height: 200px;
+      margin: 0;
+      padding: 15px 0;
+      background: transparent;
+      border: none;
+      resize: none;
+      outline: none;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #667eea;
+      font-style: italic;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { color: rgba(102, 126, 234, 0); }
+      40% { color: rgba(102, 126, 234, 0.4); }
+      60% { color: rgba(102, 126, 234, 0.7); }
+      80%, 100% { color: rgba(102, 126, 234, 1); }
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9em;
+    }
+
+    .sparkle {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: #ffd700;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: sparkle 1.5s ease-out forwards;
+    }
+
+    @keyframes sparkle {
+      0% {
+        opacity: 1;
+        transform: scale(0) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(1) rotate(180deg);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+        margin-top: 10px;
+      }
+
+      h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+      }
+
+      .demo-button {
+        padding: 12px 30px;
+        font-size: 1em;
+      }
+
+      #salida {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Título de la tienda -->
+    <h2>🛒 Mini Tienda Online</h2>
+
+    <!-- Botón que ejecuta la demostración al hacer clic -->
+    <button class="demo-button" onclick="ejecutarDemo()">✨ Ejecutar Demo ✨</button>
+
+    <!-- Área donde se mostrarán los mensajes -->
+    <div class="output-container">
+      <div class="loading" id="loading">Procesando demo</div>
+      <pre id="salida"></pre>
+    </div>
+  </div>
+
+  <div class="footer">
+    💻 Demostración de Patrones de Diseño en JavaScript
+  </div>
+
+  <script>
+    // Función para crear efectos de brillo
+    function createSparkle(x, y) {
+      const sparkle = document.createElement('div');
+      sparkle.className = 'sparkle';
+      sparkle.style.left = x + 'px';
+      sparkle.style.top = y + 'px';
+      document.body.appendChild(sparkle);
+      
+      setTimeout(() => sparkle.remove(), 1500);
+    }
+
+    // Agregar efectos de brillo al hacer clic en el botón
+    document.querySelector('.demo-button').addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      for (let i = 0; i < 6; i++) {
+        setTimeout(() => {
+          const offsetX = (Math.random() - 0.5) * 100;
+          const offsetY = (Math.random() - 0.5) * 100;
+          createSparkle(centerX + offsetX, centerY + offsetY);
+        }, i * 100);
+      }
+    });
+
+    // 🧱 Clase base para representar un producto
+    class Producto {
+      // Estos atributos son privados (solo accesibles dentro de la clase)
+      #nombre;
+      #precio;
+
+      // El constructor define cómo se crea un producto
+      constructor(nombre, precio) {
+        this.#nombre = nombre; // Guardamos el nombre
+        this.#precio = precio; // Guardamos el precio
+      }
+
+      // Estos son "getters" para acceder a los datos privados
+      get nombre() {
+        return this.#nombre;
+      }
+
+      get precio() {
+        return this.#precio;
+      }
+
+      // Muestra el producto en formato texto
+      mostrar() {
+        return `${this.#nombre} - $${this.#precio}`;
+      }
+    }
+
+    // 📚 Clase que representa un libro, basada en Producto (Herencia)
+    class Libro extends Producto {
+      constructor(nombre, precio, autor) {
+        super(nombre, precio); // Llamamos al constructor de Producto
+        this.autor = autor; // Agregamos el autor del libro
+      }
+
+      // Mostramos el libro con detalles
+      mostrar() {
+        return `📘 Libro: ${super.mostrar()} (Autor: ${this.autor})`;
+      }
+    }
+
+    // 💻 Clase que representa una laptop, basada en Producto
+    class Laptop extends Producto {
+      constructor(nombre, precio, marca) {
+        super(nombre, precio); // Llamamos al constructor de Producto
+        this.marca = marca; // Agregamos la marca de la laptop
+      }
+
+      // Mostramos la laptop con detalles
+      mostrar() {
+        return `💻 Laptop: ${super.mostrar()} (Marca: ${this.marca})`;
+      }
+    }
+
+    // 🏭 Patrón de diseño: Factory Method
+    // Este patrón nos permite crear objetos sin tener que escribir "new Libro" o "new Laptop" directamente
+    class FabricaProducto {
+      static crear(tipo, ...args) {
+        if (tipo === "libro") return new Libro(...args);
+        if (tipo === "laptop") return new Laptop(...args);
+        throw new Error("Tipo no soportado");
+      }
+    }
+
+    // 🔔 Patrón de diseño: Observer
+    // Permite notificar a varias funciones cuando ocurre algo
+    class Notificador {
+      constructor() {
+        this.subscriptores = []; // Lista de funciones a las que avisaremos
+      }
+
+      // Añadimos una nueva función que será notificada
+      suscribir(funcion) {
+        this.subscriptores.push(funcion);
+      }
+
+      // Enviamos un mensaje a todos los subscriptores
+      notificar(mensaje) {
+        this.subscriptores.forEach(fn => fn(mensaje));
+      }
+    }
+
+    // 💳 Patrón de diseño: Strategy
+    // Define diferentes formas de pagar
+
+    // Estrategia 1: Pago con tarjeta
+    class PagoConTarjeta {
+      pagar(monto) {
+        return `Pagado $${monto} con tarjeta 💳`;
+      }
+    }
+
+    // Estrategia 2: Pago con PayPal
+    class PagoConPaypal {
+      pagar(monto) {
+        return `Pagado $${monto} con PayPal 🅿️`;
+      }
+    }
+
+    // Clase que utiliza la estrategia elegida para pagar
+    class MetodoPago {
+      constructor(estrategia) {
+        this.estrategia = estrategia; // Guardamos cómo se va a pagar
+      }
+
+      // Podemos cambiar la forma de pago si se desea
+      setEstrategia(estrategia) {
+        this.estrategia = estrategia;
+      }
+
+      // Ejecutamos el pago usando la estrategia actual
+      ejecutarPago(monto) {
+        return this.estrategia.pagar(monto);
+      }
+    }
+
+    // 🛍️ Función principal que se ejecuta al presionar el botón
+    function ejecutarDemo() {
+      // Obtenemos el área de salida en pantalla
+      const salida = document.getElementById("salida");
+      const loading = document.getElementById("loading");
+      
+      // Mostrar loading y limpiar salida
+      loading.classList.add('active');
+      salida.textContent = "";
+
+      // Simular un pequeño delay para mostrar el efecto de carga
+      setTimeout(() => {
+        loading.classList.remove('active');
+        
+        // Creamos el sistema de notificaciones
+        const notificador = new Notificador();
+
+        // Nos suscribimos para que cualquier mensaje se muestre en pantalla
+        notificador.suscribir(msg => salida.textContent += `📢 ${msg}\n`);
+
+        // Creamos un carrito de compras vacío
+        const carrito = [];
+
+        // Creamos productos usando la fábrica
+        const libro = FabricaProducto.crear("libro", "JavaScript Fácil", 20, "Ismael Gonzalez");
+        const laptop = FabricaProducto.crear("laptop", "MSI", 800, "Raider GE68 HX 14V");
+
+        // Añadimos productos al carrito
+        carrito.push(libro, laptop);
+
+        // Enviamos una notificación de que se añadieron productos
+        notificador.notificar("Se agregaron productos al carrito.");
+
+        // Mostramos los productos que hay en el carrito
+        salida.textContent += `\n🧾 Productos en carrito:\n`;
+        carrito.forEach(p => salida.textContent += `- ${p.mostrar()}\n`);
+
+        // Calculamos el total del carrito sumando los precios
+        const total = carrito.reduce((sum, p) => sum + p.precio, 0);
+        salida.textContent += `\n💰 Total a pagar: $${total}\n`;
+
+        // Creamos un método de pago (puedes cambiar entre tarjeta o PayPal)
+        const pago = new MetodoPago(new PagoConPaypal());
+
+        // Mostramos el resultado del pago
+        salida.textContent += `\n✅ ${pago.ejecutarPago(total)}\n`;
+      }, 800);
+    }
+  </script>
+</body>
+</html>
